@@ -1,0 +1,86 @@
+{% extends 'tasks/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>My Tasks</h2>
+    </div>
+    <div class="col-md-4">
+        <a href="{% url 'task_create' %}" class="btn btn-primary float-end">Add New Task</a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select name="priority" id="priority" class="form-select">
+                            <option value="">All</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="">All</option>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="date" class="form-label">Date Filter</label>
+                        <select name="date" id="date" class="form-select">
+                            <option value="">All</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary d-block">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% for task in tasks %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ task.title }}</h5>
+                <p class="card-text">{{ task.description|truncatewords:30 }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-{% if task.priority == 'high' %}danger{% elif task.priority == 'medium' %}warning{% else %}info{% endif %}">
+                        {{ task.priority|title }}
+                    </span>
+                    <span class="badge bg-{% if task.status == 'completed' %}success{% elif task.status == 'in_progress' %}primary{% else %}secondary{% endif %}">
+                        {{ task.status|title }}
+                    </span>
+                </div>
+                <p class="card-text"><small class="text-muted">Due: {{ task.due_date|date:"M d, Y H:i" }}</small></p>
+                <div class="btn-group">
+                    <a href="{% url 'task_update' task.pk %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    <a href="{% url 'task_delete' task.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            No tasks found. Create a new task to get started!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %} 
